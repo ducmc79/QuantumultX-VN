@@ -820,7 +820,6 @@ if (subscriptionURL) {
   $done({content: ResourceParse()})
 // retry with new UA, default use shadowrocket
 } else if (UARetry && !inRetry && version>920) {
-  $notify("⚠️ Sẽ thử dùng UA khác, lấy lại nội dung subscription","⚠️ Nếu vẫn không có nội dung hợp lệ, hãy tự liên hệ nhà cung cấp node","⚠️ Lần thử này dùng User-Agent là ⬇️\n\n"+UA_Retry)
   $done({retry: {user_agent: "Shadowrocket/3218 CFNetwork/3860.600.12 Darwin/25.5.0 iPhone18,1"}})
 } else {
   if (typeof($resource)!=="undefined" && PProfile == 0) {
@@ -1034,9 +1033,7 @@ function ResourceParse() {
       total = PRelay==""? Base64.encode(total) : ServerRelay(total.split("\n"),PRelay) // Ép loại node mã hóa base64 rồi mới nhập vào Quantumult X, nếu là relay thì chuyển thành loại phân luồng
       if (PNS !=0) {
         if (version >913) {
-          $notify("⚠️ Tồn tại loại QuantumultX không hỗ trợ ➟ ⟦"+subtag+"⟧", "⚠️ Đã bỏ qua node liên quan, tổng cộng ➟ "+PNS+" node", "⚠️ Phiên bản này tạm thời không hỗ trợ các loại Hysteria2/Tuic/Wireguard, v.v., và các loại vless http-upgrade/xhttp/grpc/mkcp/h2” , v.v.\n\n"+NSList.join("\n"))
         } else {
-          $notify("⚠️ Tồn tại loại QuantumultX không hỗ trợ ➟ ⟦"+subtag+"⟧", "⚠️ Đã bỏ qua node liên quan, tổng cộng ➟ "+PNS+" node", "⚠️ Phiên bản này tạm thời không hỗ trợ các loại Hysteria2/Tuic/Anytls, v.v., và các loại vless http-upgrade/xhttp/grpc/mkcp/h2” , v.v.\n\n"+NSList.join("\n"))
         }
       }
       if(Pflow==1) {
@@ -1048,9 +1045,7 @@ function ResourceParse() {
       if(Perror == 0) {
       if (PNS !=0) { // Tất cả đều là node loại không được hỗ trợ
         if (version >913) {
-          $notify("⚠️ QuantumultX không hỗ trợ bất kỳ node nào trong subscription này➟ ⟦"+subtag+"⟧", "⚠️ Đã bỏ qua tổng cộng ➟ "+PNS+" node không được hỗ trợ, còn lại 0️⃣ node", "⚠️ Phiên bản này tạm thời không hỗ trợ các loại Hysteria2/Tuic/Wireguard, v.v., và các loại vless http-upgrade/xhttp/grpc/mkcp/h2” , v.v.\n\n"+NSList.join("\n"))
         } else {
-          $notify("⚠️ QuantumultX không hỗ trợ bất kỳ node nào trong subscription này➟ ⟦"+subtag+"⟧", "⚠️ Đã bỏ qua tổng cộng ➟ "+PNS+" node không được hỗ trợ, còn lại 0️⃣ node", "⚠️ Phiên bản này tạm thời không hỗ trợ các loại Hysteria2/Tuic/Anytls, v.v., và các loại vless http-upgrade/xhttp/grpc/mkcp/h2” , v.v.\n\n"+NSList.join("\n"))
         }
         
       } else { // Nguyên nhân khác
@@ -2717,13 +2712,11 @@ function Subs2QX(subs, Pudp, Ptfo, Pcert0, PTls13) {
                     }
                 } else if (type == "vless" && version<821) {
                   Perror = 1 ; // không cần phản hồi
-                  $notify("⚠️ Phiên bản Quantumult X của bạn tạm thời chưa hỗ trợ node Vless","Vui lòng cập nhật app lên phiên bản mới nhất",list0[i])
                 } else if (type == "vless" ) { // version 150 support vless 
                   node=VL2QX(list0[i], Pudp, Ptfo, Pcert0, PTls13)
                 } else if (type == "anytls") { // 2026-04-15: hỗ trợ dạng TLS
                   if (version <914) {
                     Perror = 1 ; // không cần phản hồi
-                    $notify("⚠️ Phiên bản Quantumult X của bạn tạm thời chưa hỗ trợ node anytls","Vui lòng cập nhật app lên phiên bản mới nhất",list0[i])
                   } else {
                     node=Anytls2QX(list0[i],Pcert0)
                   }
@@ -2948,12 +2941,10 @@ function VR2QX(subs, Pudp, Ptfo, Pcert0, PTls13) {
   } else if (obfs=="grpc" || obfs =="h2") {
     Perror = 1 // dạng không cần phản hồi
     if (Pntf0!=0) {
-    $notify( "⚠️ Quantumult X tạm thời chưa hỗ trợ node dạng này", "Đã bỏ qua các node vmess grpc|h2 sau",subs)
   }
     pdrop = 1
   } else {
     Perror = 1
-    $notify( "⚠️ Quantumult X tạm thời chưa hỗ trợ node dạng này", "Đã bỏ qua node vmess " + obfs + " sau",subs)
     pdrop = 1
   }
   if (obfs.indexOf("obfs=over-tls") != -1 || obfs.indexOf("obfs=wss") != -1) {
@@ -3082,7 +3073,6 @@ function Fobfs(jsonl, Pcert0, PTls13) {
     return obfsi.join(", ")
   } else if (jsonl.net !="tcp" && jsonl.net !="none" &&  jsonl.net != undefined){ // lọc bỏ các dạng h2/http...
     Perror = 1
-    $notify("⚠️ Quantumult X không hỗ trợ node dạng này", "vmess + " + jsonl.net, JSON.stringify(jsonl))
     return "NOT-SUPPORTTED"
   } else if ((jsonl.net == "tcp" || jsonl.net == "none") && jsonl.type != undefined && jsonl.type != "none" && jsonl.type != "" && jsonl.type != "vmess") {
     return "NOT-SUPPORTTED"
@@ -4749,7 +4739,6 @@ function Clash2QX(cnt) {
         PNS = PNS+1
         NSList.push(numToEmoji10(PNS)+bb[i])
         if (Pdbg==1) { // Thông báo nhắc nhở
-          $notify("Không hỗ trợ loại node này, đã bỏ qua",typecc,JSON.stringify(node))
         }
         typecc="NS"
       }
